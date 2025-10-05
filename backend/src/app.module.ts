@@ -2,15 +2,17 @@ import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'node:path';
-import { MongooseModule } from '@nestjs/mongoose';
 
 import { configProvider } from './app.config.provider';
 import { FilmsController } from './films/films.controller';
 import { OrderController } from './order/order.controller';
 import { FilmsService } from './films/films.service';
 import { OrderService } from './order/order.service';
-import { FilmsRepository } from './repository/film/films.repository';
-import { Film, FilmSchema } from './films/models/films.schema';
+import { AppRepository } from './repository/app.repository';
+
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Films } from './entities/films.entity';
+import { Schedules } from './entities/schedule.entity';
 
 @Module({
   imports: [
@@ -18,14 +20,20 @@ import { Film, FilmSchema } from './films/models/films.schema';
       isGlobal: true,
       cache: true,
     }),
-    // Подключаем MongoDB
-    MongooseModule.forRootAsync({
-      useFactory: () => ({
-        uri: process.env.DATABASE_URL || 'mongodb://localhost:27017/afisha',
-      }),
+    // Подключаем postgres
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: 'nest_project',
+      entities: [Films, Schedules],
+      synchronize: true,
     }),
     // Регистрируем схемы
-    MongooseModule.forFeature([{ name: Film.name, schema: FilmSchema }]),
+    TypeOrmModule.forFeature([Films, Schedules]),
+
     // @todo: Добавьте раздачу статических файлов из public
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', 'public'),
@@ -33,6 +41,6 @@ import { Film, FilmSchema } from './films/models/films.schema';
     }),
   ],
   controllers: [FilmsController, OrderController],
-  providers: [configProvider, FilmsService, OrderService, FilmsRepository],
+  providers: [configProvider, FilmsService, OrderService, AppRepository],
 })
 export class AppModule {}
