@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { CreateOrderDto, OrderResponseDto, TicketDto } from './dto/order.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { FilmsRepository } from '../repository/film/films.repository';
+import { AppRepository } from '../repository/app.repository';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly filmsRepository: FilmsRepository) {}
+  constructor(private readonly filmsRepository: AppRepository) {}
 
   async createOrder(data: CreateOrderDto): Promise<OrderResponseDto> {
     if (!data.tickets || data.tickets.length === 0) {
