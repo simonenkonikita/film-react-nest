@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { FilmsRepository } from '../repository/film/films.repository';
+import { AppRepository } from '../repository/app.repository';
 import { FilmDto } from './dto/films.dto';
 
 @Injectable()
 export class FilmsService {
-  constructor(private readonly filmsRepository: FilmsRepository) {}
+  constructor(private readonly filmsRepository: AppRepository) {}
 
   async findAllFilms(): Promise<FilmDto[]> {
     const films = this.filmsRepository.findAll();
