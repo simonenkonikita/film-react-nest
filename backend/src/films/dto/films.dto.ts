@@ -48,6 +48,7 @@ export class ScheduleDto {
   @IsUUID()
   id: string;
   @IsOptional()
+  @Type(() => Date)
   @IsDate()
   daytime: Date;
   @IsOptional()

@@ -3,7 +3,8 @@ import { describe, beforeEach, afterEach, it, expect, jest } from '@jest/globals
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
 import { TicketDto, CreateOrderDto, OrderResponseDto } from './dto/order.dto';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { FilmDto } from 'src/films/dto/films.dto';
 
 describe('OrderController', () => {
   let controller: OrderController;
@@ -13,46 +14,59 @@ describe('OrderController', () => {
     createOrder: jest.fn(),
   } as any;
 
-  const mockFilm = {
-    id: 'film-uuid-1',
+  const mockFilm: FilmDto = {
+    id: "0e33c7f6-27a7-4aa0-8e61-65d7e5effecf",
+    title: "Архитекторы общества",
+    director: "Итан Райт",
+    rating: 2.9,
+    tags: [
+      "Документальный"
+    ],
+    image: "/bg1s.jpg",
+    cover: "/bg1c.jpg",
+    about: "Документальный фильм, исследующий влияние искусственного интеллекта на общество и этические, философские и социальные последствия технологии.",
+    description: "Документальный фильм Итана Райта исследует влияние технологий на современное общество, уделяя особое внимание роли искусственного интеллекта в формировании нашего будущего. Фильм исследует этические, философские и социальные последствия гонки технологий ИИ и поднимает вопрос: какой мир мы создаём для будущих поколений.",
     schedule: [
       {
-        id: 'session-uuid-1',
-        rows: 10,
+        id: "89ee32f3-8164-40a6-b237-f4d492450250",
+        daytime: new Date("2024-06-28T13:00:53.000Z"),
+        hall: "2",
+        rows: 5,
         seats: 10,
-        price: 500,
-        taken: ['1:1', '1:2'],
-      },
-    ],
+        price: 350,
+        taken: []
+      }
+    ]
   };
 
   const mockCreateOrderDto: CreateOrderDto = {
-    email: 'test@yandex.ru',
-    phone: '+79280000000',
+    email: "user@example.com",
+    phone: "+79123456789",
     tickets: [
       {
-        film: 'film-uuid-1',
-        session: 'session-uuid-1',
-        daytime: '18:00',
-        row: 1,
-        seat: 1,
-        price: 500,
-      },
-    ],
-  };
+        film: "0e33c7f6-27a7-4aa0-8e61-65d7e5effecf",
+        session: "5beec101-acbb-4158-adc6-d855716b44a8",
+        daytime: new Date("2024-06-28T13:00:53.000Z"),
+        row: 2,
+        seat: 2,
+        price: 350
+      }
+    ]
+  }
 
   const mockOrderResponse: OrderResponseDto = {
     total: 1,
     items: [
       {
-        film: 'film-uuid-1',
-        session: 'session-uuid-1',
-        daytime: '18:00',
-        row: 1,
-        seat: 1,
-        price: 500,
-      },
-    ],
+        id: "6a3eb1cb-7c76-4743-8d33-fb5dbfee91ae",
+        film: "0e33c7f6-27a7-4aa0-8e61-65d7e5effecf",
+        session: "5beec101-acbb-4158-adc6-d855716b44a8",
+        daytime: new Date("2024-06-28T13:00:53.000Z"),
+        row: 3,
+        seat: 3,
+        price: 350
+      }
+    ]
   };
 
 
@@ -78,7 +92,7 @@ describe('OrderController', () => {
 
 
   describe('createOrder', () => {
-    it('создание ордера', async () => {
+    it('создание заказа', async () => {
 
       mockOrderService.createOrder.mockResolvedValue(mockOrderResponse);
 
@@ -89,4 +103,65 @@ describe('OrderController', () => {
     });
   });
 
+  describe('должен выбрасывать ошибку при невалидных данных', () => {
+    it('пустой массив tickets', async () => {
+
+      const invalidDto = { ...mockCreateOrderDto, tickets: [] };
+
+      mockOrderService.createOrder.mockRejectedValue(new BadRequestException('Выбирите хотя бы один билет'));
+
+      await expect(controller.createOrder(invalidDto)).rejects.toThrow(BadRequestException);
+      await expect(controller.createOrder(invalidDto)).rejects.toThrow('Выбирите хотя бы один билет');
+    });
+
+    it('отсутствует email', async () => {
+      const invalidDto = { ...mockCreateOrderDto, email: undefined };
+      mockOrderService.createOrder.mockRejectedValue(new BadRequestException('Email и телефон обязательны'));
+
+      await expect(controller.createOrder(invalidDto)).rejects.toThrow(BadRequestException);
+    });
+
+    it('отсутствует phone', async () => {
+      const invalidDto = { ...mockCreateOrderDto, phone: undefined };
+      mockOrderService.createOrder.mockRejectedValue(new BadRequestException('Email и телефон обязательны'));
+
+      await expect(controller.createOrder(invalidDto)).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('должен обрабатывать ошибки бизнес-логики', () => {
+    it('билет на несуществующий фильм', async () => {
+      mockOrderService.createOrder.mockRejectedValue(new NotFoundException('Фильм не найден'));
+
+      await expect(controller.createOrder(mockCreateOrderDto)).rejects.toThrow(NotFoundException);
+      await expect(controller.createOrder(mockCreateOrderDto)).rejects.toThrow('Фильм не найден');
+    });
+
+    it('билет на несуществующий сеанс', async () => {
+      mockOrderService.createOrder.mockRejectedValue(new NotFoundException('Сеанс не найден'));
+
+      await expect(controller.createOrder(mockCreateOrderDto)).rejects.toThrow(NotFoundException);
+      await expect(controller.createOrder(mockCreateOrderDto)).rejects.toThrow('Сеанс не найден');
+    });
+
+    it('попытка бронирования уже занятого места', async () => {
+      mockOrderService.createOrder.mockRejectedValue(new BadRequestException('Место 1:1 уже занято'));
+
+      await expect(controller.createOrder(mockCreateOrderDto)).rejects.toThrow(BadRequestException);
+      await expect(controller.createOrder(mockCreateOrderDto)).rejects.toThrow('Место 1:1 уже занято');
+    });
+
+    it('неверные параметры места (ряд вне диапазона)', async () => {
+      mockOrderService.createOrder.mockRejectedValue(new BadRequestException('Неверный номер ряда. Доступные ряды: 1-10'));
+
+      await expect(controller.createOrder(mockCreateOrderDto)).rejects.toThrow(BadRequestException);
+    });
+
+    it('несоответствие цены билета', async () => {
+      mockOrderService.createOrder.mockRejectedValue(new BadRequestException('Неверная цена. Ожидалось: 500, получено: 300'));
+
+      await expect(controller.createOrder(mockCreateOrderDto)).rejects.toThrow(BadRequestException);
+      await expect(controller.createOrder(mockCreateOrderDto)).rejects.toThrow('Неверная цена');
+    });
+  });
 });
