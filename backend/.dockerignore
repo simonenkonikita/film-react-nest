@@ -1,0 +1,42 @@
+# Deps
+node_modules/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# README и файлы лицензий
+README.md
+LICENSE
+
+# Build outputs
+dist/
+build/
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# IDE Files
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Test coverage
+.nyc_output/
+coverage/
+
+# OS generated files
+Thumbs.db
