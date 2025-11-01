@@ -52,3 +52,4 @@ INSERT INTO schedules("daytime","filmId","hall","id","price","rows","seats","tak
 INSERT INTO schedules("daytime","filmId","hall","id","price","rows","seats","taken") VALUES('2024-06-30T12:00:53+03:00','92b8a2a7-ab6b-4fa9-915b-d27945865e39',0,'9d3d3914-ea59-46a0-80a2-4e320e82956a',350,5,10,'');
 INSERT INTO schedules("daytime","filmId","hall","id","price","rows","seats","taken") VALUES('2024-06-30T16:00:53+03:00','92b8a2a7-ab6b-4fa9-915b-d27945865e39',1,'5c68663d-1a71-401c-9214-e79af571c347',350,5,10,'');
 INSERT INTO schedules("daytime","filmId","hall","id","price","rows","seats","taken") VALUES('2024-06-30T18:00:53+03:00','92b8a2a7-ab6b-4fa9-915b-d27945865e39',2,'2644a72a-6f17-4c61-a405-9c48bb0ea682',350,5,10,'');
+
