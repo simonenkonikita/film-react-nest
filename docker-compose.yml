@@ -30,10 +30,7 @@ services:
       - app-network
   
   backend:
-    image:  ghcr.io/${OWNER}/film-backend:latest
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/${OWNER}/film-backend:latest
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -51,9 +48,6 @@ services:
 
   nginx:
     image: ghcr.io/${OWNER}/film-nginx:latest 
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "80:80"
@@ -66,9 +60,6 @@ services:
 
   frontend:
     image: ghcr.io/${OWNER}/film-frontend:latest 
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
       - frontend_dist:/app/dist
