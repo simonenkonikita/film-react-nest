@@ -72,6 +72,8 @@ services:
     restart: unless-stopped
     volumes:
       - frontend_dist:/app/dist
+    depends_on:
+      - backend
     networks:
       - app-network
 
