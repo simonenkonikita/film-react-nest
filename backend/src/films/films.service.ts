@@ -4,7 +4,7 @@ import { FilmDto } from './dto/films.dto';
 
 @Injectable()
 export class FilmsService {
-  constructor(private readonly filmsRepository: AppRepository) { }
+  constructor(private readonly filmsRepository: AppRepository) {}
 
   async findAllFilms(): Promise<FilmDto[]> {
     const films = await this.filmsRepository.findAll();

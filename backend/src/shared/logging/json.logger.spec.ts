@@ -1,5 +1,12 @@
 import { JsonLogger } from './json.logger';
-import { describe, beforeEach, afterEach, it, expect, jest } from '@jest/globals';
+import {
+  describe,
+  beforeEach,
+  afterEach,
+  it,
+  expect,
+  jest,
+} from '@jest/globals';
 
 describe('JsonLogger', () => {
   let logger: JsonLogger;
@@ -11,11 +18,11 @@ describe('JsonLogger', () => {
 
   beforeEach(() => {
     logger = new JsonLogger();
-    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
-    consoleDebugSpy = jest.spyOn(console, 'debug').mockImplementation(() => { });
-    consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
+    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    consoleDebugSpy = jest.spyOn(console, 'debug').mockImplementation(() => {});
+    consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => {});
   });
 
   afterEach(() => {

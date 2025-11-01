@@ -1,5 +1,12 @@
 import { TskvLogger } from './tskv.logger';
-import { describe, beforeEach, afterEach, it, expect, jest } from '@jest/globals';
+import {
+  describe,
+  beforeEach,
+  afterEach,
+  it,
+  expect,
+  jest,
+} from '@jest/globals';
 
 describe('TskvLogger', () => {
   let logger: TskvLogger;
@@ -8,8 +15,12 @@ describe('TskvLogger', () => {
 
   beforeEach(() => {
     logger = new TskvLogger();
-    stdoutSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
-    stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => true);
+    stdoutSpy = jest
+      .spyOn(process.stdout, 'write')
+      .mockImplementation(() => true);
+    stderrSpy = jest
+      .spyOn(process.stderr, 'write')
+      .mockImplementation(() => true);
   });
 
   afterEach(() => {
@@ -23,7 +34,7 @@ describe('TskvLogger', () => {
 
       expect(stdoutSpy).toHaveBeenCalledTimes(1);
 
-      const output = stdoutSpy.mock.calls[0][0] as string;;
+      const output = stdoutSpy.mock.calls[0][0] as string;
 
       expect(output).toContain('level=log');
       expect(output).toContain('message="test log message"');
@@ -45,4 +56,4 @@ describe('TskvLogger', () => {
       expect(output).toContain('timestamp=');
     });
   });
-  });
+});

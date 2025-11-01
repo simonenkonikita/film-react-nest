@@ -44,4 +44,4 @@ import { envValidationSchema } from '../config/env.validation';
   controllers: [FilmsController, OrderController],
   providers: [FilmsService, OrderService, AppRepository],
 })
-export class AppModule { }
+export class AppModule {}

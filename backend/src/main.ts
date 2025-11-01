@@ -4,7 +4,6 @@ import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { LoggerFactory } from './shared/logging/logger.factory';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
