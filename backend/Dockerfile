@@ -21,4 +21,9 @@ RUN npm install --only=production
 
 COPY --from=builder /app/dist ./dist/
 
-CMD ["node", "dist/main.js"]
+# Проверяем структуру dist
+RUN ls -la /app/dist/ && ls -la /app/dist/src/
+
+EXPOSE 3000
+
+CMD ["node", "dist/src/main.js"]

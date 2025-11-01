@@ -1,39 +1,88 @@
 services:
   postgres:
     image: postgres:15
-    restart: on-failure
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: nest_project
-      POSTGRES_USER: student
-      POSTGRES_PASSWORD: student
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/test/prac.init.sql:/docker-entrypoint-initdb.d/prac.init.sql
+      - ./backend/test/prac.films.sql:/docker-entrypoint-initdb.d/prac.films.sql
+      - ./backend/test/prac.schedules.sql:/docker-entrypoint-initdb.d/prac.schedules.sql
+    networks:
+      - app-network
 
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+  
   backend:
-    build: ./backend
-    image: film-backend
+    image:  ghcr.io/${OWNER}/film-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
       - "3000:3000"
-    restart: on-failure
     environment:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
-      DATABASE_USERNAME: student
-      DATABASE_PASSWORD: student
-      DATABASE_NAME: nest_project
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
     depends_on:
       - postgres 
+    networks:
+      - app-network
 
-  frontend:
-    build: ./frontend
-    image: film-frontend
+  nginx:
+    image: ghcr.io/${OWNER}/film-nginx:latest 
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
       - "80:80"
-    restart: on-failure
     depends_on:
       - backend
+    volumes:
+      - frontend_dist:/usr/share/nginx/html
+    networks:
+      - app-network
+
+  frontend:
+    image: ghcr.io/${OWNER}/film-frontend:latest 
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - frontend_dist:/app/dist
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
+  pgadmin_data:
+  frontend_dist:
+
+networks:
+  app-network:
+    driver: bridge
