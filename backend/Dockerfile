@@ -1,20 +1,24 @@
-
 FROM node:20-alpine AS builder
-WORKDIR /var/www/film-react-nest
+
+WORKDIR /app
+
 COPY package*.json ./
+COPY tsconfig*.json ./
 
 RUN npm install
 
 COPY . .
+
 RUN npm run build
 
-FROM node:20-alpine as production
-WORKDIR /var/www/film-react-nest
+FROM node:20-alpine AS production
 
-COPY --from=builder /var/www/film-react-nest/package*.json ./
+WORKDIR /app
+
+COPY --from=builder /app/package*.json ./
 
 RUN npm install --only=production
 
-COPY --from=builder /var/www/film-react-nest/dist ./dist/
+COPY --from=builder /app/dist ./dist/
 
-CMD ["node", "./dist/main.js"]
+CMD ["node", "dist/main.js"]

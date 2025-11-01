@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: on-failure
+    environment:
+      POSTGRES_DB: nest_project
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: student
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    image: film-backend
+    ports:
+      - "3000:3000"
+    restart: on-failure
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: student
+      DATABASE_PASSWORD: student
+      DATABASE_NAME: nest_project
+    depends_on:
+      - postgres 
+
+  frontend:
+    build: ./frontend
+    image: film-frontend
+    ports:
+      - "80:80"
+    restart: on-failure
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

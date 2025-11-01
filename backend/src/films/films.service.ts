@@ -4,18 +4,18 @@ import { FilmDto } from './dto/films.dto';
 
 @Injectable()
 export class FilmsService {
-  constructor(private readonly filmsRepository: AppRepository) {}
+  constructor(private readonly filmsRepository: AppRepository) { }
 
   async findAllFilms(): Promise<FilmDto[]> {
-    const films = this.filmsRepository.findAll();
-    if (!films) {
+    const films = await this.filmsRepository.findAll();
+    if (!films || films.length === 0) {
       throw new NotFoundException('Список фильмов пуст');
     }
     return films;
   }
 
   async findFilmSchedule(id: string): Promise<FilmDto> {
-    const film = this.filmsRepository.findFilmSchedule(id);
+    const film = await this.filmsRepository.findFilmSchedule(id);
     if (!film) {
       throw new NotFoundException('Фильм не найден');
     }

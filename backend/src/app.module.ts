@@ -23,11 +23,11 @@ import { Schedules } from './entities/schedule.entity';
     // Подключаем postgres
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
-      database: 'nest_project',
+      host: process.env.DATABASE_HOST || 'localhost',
+      port: parseInt(process.env.DATABASE_PORT) || 5432,
+      username: process.env.DATABASE_USERNAME || 'student',
+      password: process.env.DATABASE_PASSWORD || 'student',
+      database: process.env.DATABASE_NAME || 'nest_project',
       entities: [Films, Schedules],
       synchronize: true,
     }),
@@ -43,4 +43,4 @@ import { Schedules } from './entities/schedule.entity';
   controllers: [FilmsController, OrderController],
   providers: [configProvider, FilmsService, OrderService, AppRepository],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,20 +1,18 @@
+FROM node:20 AS builder
 
-FROM node:20-alpine AS builder
-WORKDIR /var/www/film-react-nest
+WORKDIR /app
 COPY package*.json ./
+COPY tsconfig*.json ./
 
-RUN npm install
+RUN npm install --legacy-peer-deps
+
 
 COPY . .
+
 RUN npm run build
 
-FROM node:20-alpine as production
-WORKDIR /var/www/film-react-nest
+FROM nginx:alpine AS production
 
-COPY --from=builder /var/www/film-react-nest/package*.json ./
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-RUN npm install --only=production
-
-COPY --from=builder /var/www/film-react-nest/dist ./dist/
-
-CMD ["node", "./dist/main.js"]
+CMD ["nginx", "-g", "daemon off;"]
