@@ -41,6 +41,13 @@ jobs:
           push: true
           tags: 'ghcr.io/${{ env.REPO }}/film-backend:latest'
 
+      - name: Build and push frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          tags: 'ghcr.io/${{ env.REPO }}/film-frontend:latest'
+
       - name: Build and push nginx
         uses: docker/build-push-action@v6
         with:
@@ -48,3 +55,15 @@ jobs:
           file: ./nginx/Dockerfile
           push: true
           tags: 'ghcr.io/${{ env.REPO }}/film-nginx:latest'
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ~/film-react-nest
+            docker compose pull
+            docker compose up -d
+            docker image prune -f
