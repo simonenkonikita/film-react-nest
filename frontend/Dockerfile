@@ -6,13 +6,8 @@ COPY tsconfig*.json ./
 
 RUN npm install --legacy-peer-deps
 
-
 COPY . .
 
 RUN npm run build
 
-FROM nginx:alpine AS production
-
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["sh", "-c", "cp -r /app/dist/* /app/dist/ && tail -f /dev/null"]

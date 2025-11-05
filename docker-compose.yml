@@ -46,28 +46,28 @@ services:
     networks:
       - app-network
 
+  frontend:
+    image: ghcr.io/${OWNER}/film-frontend:latest 
+    restart: unless-stopped
+    volumes:
+      - frontend_dist:/app/dist
+    networks:
+      - app-network
+      
   nginx:
     image: ghcr.io/${OWNER}/film-nginx:latest 
     restart: unless-stopped
     ports:
       - "80:80"
+    volumes:
+      - frontend_dist:/var/www
+    networks:
+      - app-network
     depends_on:
       - backend
       - frontend 
-    volumes:
-      - frontend_dist:/usr/share/nginx/html
-    networks:
-      - app-network
 
-  frontend:
-    image: ghcr.io/${OWNER}/film-frontend:latest 
-    restart: unless-stopped
-    volumes:
-      - frontend_dist:/usr/share/nginx/html
-    depends_on:
-      - backend
-    networks:
-      - app-network
+
 
 volumes:
   postgres_data:
