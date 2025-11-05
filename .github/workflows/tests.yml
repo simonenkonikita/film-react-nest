@@ -64,6 +64,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd ~/film-react-nest
-            docker compose pull
-            docker compose up -d
-            docker image prune -f
+             ./update-app.sh
