@@ -67,8 +67,6 @@ services:
       - backend
       - frontend 
 
-
-
 volumes:
   postgres_data:
   pgadmin_data:
