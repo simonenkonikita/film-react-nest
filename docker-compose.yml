@@ -50,7 +50,7 @@ services:
     image: ghcr.io/${OWNER}/film-frontend:latest 
     restart: unless-stopped
     volumes:
-      - frontend_dist:/app/dist
+      - frontend_dist:/app/dist-volume/
     networks:
       - app-network
       

@@ -10,4 +10,4 @@ COPY . .
 
 RUN npm run build
 
-CMD ["sh", "-c", "cp -r /app/dist/* /app/dist/ && tail -f /dev/null"]
+CMD ["sh", "-c", "cp -r /app/dist/. /app/dist-volume/ && echo 'Files copied' && tail -f /dev/null"]
