@@ -30,8 +30,8 @@ services:
       - app-network
   
   backend:
-    # image: ghcr.io/${OWNER}/film-backend:latest
-    build: ./backend 
+    image: ghcr.io/${OWNER}/film-backend:latest
+    # build: ./backend 
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -50,8 +50,8 @@ services:
       - app-network
 
   frontend:
-    # image: ghcr.io/${OWNER}/film-frontend:latest 
-    build: ./frontend 
+    image: ghcr.io/${OWNER}/film-frontend:latest 
+    # build: ./frontend 
     restart: unless-stopped
     volumes:
       - frontend_dist:/app/dist-volume/
@@ -59,11 +59,11 @@ services:
       - app-network
       
   nginx:
-    # image: ghcr.io/${OWNER}/film-nginx:latest 
-    build: ./nginx 
+    image: ghcr.io/${OWNER}/film-nginx:latest 
+    # build: ./nginx 
     restart: unless-stopped
     ports:
-      - "8081:80"
+      - "80:80"
     volumes:
       - frontend_dist:/var/www
     networks:
