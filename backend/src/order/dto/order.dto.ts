@@ -4,6 +4,7 @@ import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
+  IsDate,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -16,13 +17,17 @@ import {
 } from 'class-validator';
 
 export class TicketDto {
+  @IsOptional()
+  @IsUUID()
+  id?: string;
   @IsUUID()
   film: string;
   @IsUUID()
   session: string;
   @IsOptional()
-  @IsString()
-  daytime?: string;
+  @Type(() => Date)
+  @IsDate()
+  daytime: Date;
   @IsOptional()
   @IsNumber()
   @Min(1)

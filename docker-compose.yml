@@ -1,0 +1,85 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+  
+  backend:
+    image: ghcr.io/${OWNER}/film-backend:latest
+    # build: ./backend 
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_HOST: postgres
+      # DATABASE_HOST: localhost
+      # DATABASE_HOST: host.docker.internal
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+    depends_on:
+      - postgres 
+    networks:
+      - app-network
+
+  frontend:
+    image: ghcr.io/${OWNER}/film-frontend:latest 
+    # build: ./frontend 
+    restart: unless-stopped
+    volumes:
+      - frontend_dist:/app/dist-volume/
+    networks:
+      - app-network
+      
+  nginx:
+    image: ghcr.io/${OWNER}/film-nginx:latest 
+    # build: ./nginx 
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - frontend_dist:/var/www
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - app-network
+    depends_on:
+      - backend
+      - frontend 
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+  frontend_dist:
+
+networks:
+  app-network:
+    driver: bridge
