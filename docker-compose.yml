@@ -30,24 +30,28 @@ services:
       - app-network
   
   backend:
-    image: ghcr.io/${OWNER}/film-backend:latest
+    # image: ghcr.io/${OWNER}/film-backend:latest
+    build: ./backend 
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      DATABASE_HOST: postgres
+      # DATABASE_HOST: postgres
+      # DATABASE_HOST: localhost
+      DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 5432
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       NODE_ENV: ${NODE_ENV}
-    depends_on:
-      - postgres 
+    # depends_on:
+      # - postgres 
     networks:
       - app-network
 
   frontend:
-    image: ghcr.io/${OWNER}/film-frontend:latest 
+    # image: ghcr.io/${OWNER}/film-frontend:latest 
+    build: ./frontend 
     restart: unless-stopped
     volumes:
       - frontend_dist:/app/dist-volume/
@@ -55,10 +59,11 @@ services:
       - app-network
       
   nginx:
-    image: ghcr.io/${OWNER}/film-nginx:latest 
+    # image: ghcr.io/${OWNER}/film-nginx:latest 
+    build: ./nginx 
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8081:80"
     volumes:
       - frontend_dist:/var/www
     networks:

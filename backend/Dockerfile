@@ -21,6 +21,8 @@ RUN npm install --only=production
 
 COPY --from=builder /app/dist ./dist/
 
+COPY --from=builder /app/public ./public/
+
 # Проверяем структуру dist
 RUN ls -la /app/dist/ && ls -la /app/dist/src/
 

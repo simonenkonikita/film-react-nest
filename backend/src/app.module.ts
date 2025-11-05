@@ -37,11 +37,15 @@ import { envValidationSchema } from '../config/env.validation';
 
     // @todo: Добавьте раздачу статических файлов из public
     ServeStaticModule.forRoot({
-      rootPath: path.join(__dirname, '..', 'public'),
-      serveRoot: '/static',
+      rootPath: path.join(__dirname, '..', '..', 'public', 'content'),
+      serveRoot: '/content',
+      serveStaticOptions: {
+        index: false,
+        fallthrough: true,
+      },
     }),
   ],
   controllers: [FilmsController, OrderController],
   providers: [FilmsService, OrderService, AppRepository],
 })
-export class AppModule {}
+export class AppModule { }
